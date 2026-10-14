@@ -552,6 +552,7 @@
 
         // El botón NO escapa del ratón.
         botonNo.addEventListener("mouseenter", () => {
+            transition: left 0.35s ease, top 0.35s ease, transform 0.2s ease;
             const margen = 20;
             const maxX = Math.max(margen, window.innerWidth - botonNo.offsetWidth - margen);
             const maxY = Math.max(margen, window.innerHeight - botonNo.offsetHeight - margen);
