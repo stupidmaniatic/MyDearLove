@@ -86,12 +86,19 @@
         }
 
         #boton-no {
-            left: 155px;
-            background: #292026;
-            color: #F5EEF2;
-            border: 1px solid #F04460;
-            transition: background .2s;
-        }
+    left: 155px;
+    background: #292026;
+    color: #F5EEF2;
+    border: 1px solid #F04460;
+
+    /* Movimiento suave */
+    transition:
+        left 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        top 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        background 0.2s;
+
+    will-change: left, top;
+}
 
         #boton-no:hover { background: #3A252D; }
 
@@ -477,7 +484,7 @@
     <script>
         const cursor = document.querySelector(".cursor-personalizado");
         const botonSi = document.querySelector("#boton-si");
-        const  = document.querySelector("#boton-no");
+        const botonNo = document.querySelector("#boton-no");
 
         // Cargar el cursor y mostrar un gatito de respaldo si falla el PNG.
         const imagenGatos = new Image();
@@ -550,18 +557,31 @@
             }
         });
 
-        // El botón NO escapa del ratón.
+                // El botón NO escapa con un movimiento suave.
         botonNo.addEventListener("mouseenter", () => {
-            
             const margen = 20;
-            const maxX = Math.max(margen, window.innerWidth - botonNo.offsetWidth - margen);
-            const maxY = Math.max(margen, window.innerHeight - botonNo.offsetHeight - margen);
-            botonNo.style.position = "fixed";
-            botonNo.style.left = (margen + Math.random() * (maxX - margen)) + "px";
-            botonNo.style.top = (margen + Math.random() * (maxY - margen)) + "px";
-            transition: left 0.35s ease, top 0.35s ease, transform 0.2s ease;
-        });
+            const ancho = botonNo.offsetWidth;
+            const alto = botonNo.offsetHeight;
 
+            const maxX = Math.max(margen, window.innerWidth - ancho - margen);
+            const maxY = Math.max(margen, window.innerHeight - alto - margen);
+
+            // Colocarlo en posición fija conservando su posición actual.
+            const rect = botonNo.getBoundingClientRect();
+
+            if (getComputedStyle(botonNo).position !== "fixed") {
+                botonNo.style.left = rect.left + "px";
+                botonNo.style.top = rect.top + "px";
+                botonNo.style.position = "fixed";
+            }
+
+            // Elegir un nuevo destino.
+            const nuevoX = margen + Math.random() * (maxX - margen);
+            const nuevoY = margen + Math.random() * (maxY - margen);
+
+            botonNo.style.left = nuevoX + "px";
+            botonNo.style.top = nuevoY + "px";
+        });
         // Música
         const botonGolden = document.querySelector("#boton-golden");
         const botonFromStart = document.querySelector("#boton-from-start");
