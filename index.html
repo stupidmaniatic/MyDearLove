@@ -1,0 +1,756 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una pregunta para ti ♡</title>
+
+    <style>
+        /* Diseño general */
+        body {
+            background: #111116;
+            color: #F5EEF2;
+            font-family: Georgia, serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: normal;
+            color: #E9A5BD;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            color: #C5BAC4;
+            line-height: 1.8;
+            max-width: 450px;
+        }
+
+        h2 {
+            font-size: 28px;
+            color: #C5BAC4;
+            font-weight: normal;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        /* Adorno superior */
+        .adorno {
+            color: #F04460;
+            font-size: 30px;
+            letter-spacing: 0;
+            margin-bottom: 12px;
+            white-space: nowrap;
+        }
+
+        /* Botones de respuesta */
+        .contenedor-botones {
+            position: relative;
+            width: 290px;
+            height: 60px;
+            flex-shrink: 0;
+        }
+
+        #boton-si {
+            position: absolute;
+            left: 0;
+            top: 0;
+            margin: 8px;
+            background: #F04460;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 30px;
+            padding: 13px 20px;
+            font-family: inherit;
+            font-size: 15px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        #boton-si:hover {
+            background: #C82040;
+            transform: translateY(-3px);
+        }
+
+        #boton-no {
+            position: absolute;
+            left: 155px;
+            top: 0;
+            margin: 8px;
+            background: #292026;
+            color: #F5EEF2;
+            border: 1px solid #F04460;
+            border-radius: 30px;
+            padding: 13px 20px;
+            font-family: inherit;
+            font-size: 15px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background 0.2s, left 0.2s, top 0.2s;
+        }
+
+        #boton-no:hover {
+            background: #3A252D;
+        }
+
+        /* Corazones decorativos */
+        .corazones-decorativos {
+            color: #F04460;
+            font-size: 22px;
+            letter-spacing: 8px;
+            margin-top: 20px;
+        }
+
+        /* Cursor de gatitos */
+        .cursor-personalizado {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            background-image: url("images/both cats.png");
+            background-size: 200% 100%;
+            background-position: left center;
+            background-repeat: no-repeat;
+            pointer-events: none;
+            z-index: 10001;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-personalizado.clicando {
+            background-position: right center;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            html,
+            body,
+            body *,
+            button {
+                cursor: none !important;
+            }
+        }
+
+        /* Lluvia de corazones */
+        .corazon-lluvia {
+            position: fixed;
+            top: -50px;
+            width: 35px;
+            height: 35px;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 9999;
+            animation: caer-corazon linear forwards;
+            filter: brightness(0) saturate(100%)
+                invert(78%) sepia(17%) saturate(652%)
+                hue-rotate(292deg) brightness(100%) contrast(95%);
+        }
+
+        @keyframes caer-corazon {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Corazones flotantes de fondo */
+        .fondo-corazones {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .corazon-flotante {
+            position: absolute;
+            bottom: -50px;
+            color: #F04460;
+            opacity: 0;
+            animation: flotar-corazon linear infinite;
+            text-shadow: 0 0 12px rgba(240, 68, 96, 0.35);
+            user-select: none;
+        }
+
+        @keyframes flotar-corazon {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 0.35;
+            }
+
+            80% {
+                opacity: 0.25;
+            }
+
+            100% {
+                transform: translateY(-115vh) rotate(25deg);
+                opacity: 0;
+            }
+        }
+
+        /* Botones de música */
+        .controles-musica {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        #boton-golden,
+        #boton-from-start {
+            background: #292026;
+            color: #E9A5BD;
+            border: 1px solid #F04460;
+            border-radius: 30px;
+            padding: 12px 18px;
+            font-family: inherit;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        #boton-golden:hover,
+        #boton-from-start:hover {
+            background: #3A252D;
+            transform: translateY(-2px);
+        }
+
+        #boton-golden.reproduciendo,
+        #boton-from-start.reproduciendo {
+            background: #F04460;
+            color: #FFFFFF;
+        }
+
+        /* Carta principal */
+        .carta-amor {
+            display: none;
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+            width: calc(100% - 40px);
+            box-sizing: border-box;
+            margin: 30px auto;
+            padding: 30px 25px;
+            background: linear-gradient(145deg, #25151f, #191219);
+            border: 1px solid #F04460;
+            border-radius: 18px;
+            box-shadow: 0 0 30px rgba(240, 68, 96, 0.15);
+            animation: aparecer-carta 1s ease forwards;
+        }
+
+        .carta-amor.visible {
+            display: block;
+        }
+
+        .carta-amor h2 {
+            color: #E9A5BD;
+            font-size: 28px;
+            margin: 0 0 20px;
+        }
+
+        .carta-amor p {
+            color: #E4D2DC;
+            font-size: 16px;
+            line-height: 1.9;
+            text-align: left;
+        }
+
+        .carta-amor .firma {
+            color: #F04460;
+            text-align: right;
+            margin-top: 25px;
+            font-style: italic;
+        }
+
+        @keyframes aparecer-carta {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Sobre secreto: oculto al entrar en la página */
+        .sobre-seccion {
+            display: none;
+            position: relative;
+            z-index: 1;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px auto;
+            width: 100%;
+        }
+
+        .texto-sobre {
+            color: #E9A5BD;
+            font-size: 15px;
+            margin: 0 0 20px;
+        }
+
+        .boton-sobre {
+            position: relative;
+            width: 190px;
+            height: 125px;
+            border: 1px solid #F04460;
+            border-radius: 8px;
+            background: #542334;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(240, 68, 96, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            perspective: 500px;
+        }
+
+        .boton-sobre:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 35px rgba(240, 68, 96, 0.4);
+        }
+
+        .sobre-solapa {
+            position: absolute;
+            inset: 0;
+            background: #7D3048;
+            clip-path: polygon(0 0, 100% 0, 50% 60%);
+            transform-origin: top center;
+            transition: transform 0.6s ease;
+            z-index: 2;
+        }
+
+        .boton-sobre.abierto .sobre-solapa {
+            transform: rotateX(180deg);
+        }
+
+        .sobre-corazon {
+            position: absolute;
+            top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #FF8EAA;
+            font-size: 36px;
+            z-index: 3;
+            transition: opacity 0.3s;
+        }
+
+        .boton-sobre.abierto .sobre-corazon {
+            opacity: 0;
+        }
+
+        .mensaje-sobre {
+            display: none;
+            position: relative;
+            z-index: 1;
+            max-width: 420px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 25px;
+            padding: 25px;
+            border: 1px solid #F04460;
+            border-radius: 16px;
+            background: linear-gradient(145deg, #25151f, #191219);
+            box-shadow: 0 0 30px rgba(240, 68, 96, 0.15);
+        }
+
+        .mensaje-sobre.visible {
+            display: block;
+            animation: aparecer-carta 0.8s ease forwards;
+        }
+
+        .mensaje-sobre h2 {
+            color: #E9A5BD;
+            margin: 0 0 18px;
+        }
+
+        .mensaje-sobre p {
+            color: #E4D2DC;
+            font-size: 16px;
+            line-height: 1.9;
+            text-align: left;
+        }
+
+        .mensaje-sobre .firma-sobre {
+            color: #F04460;
+            text-align: right;
+            font-style: italic;
+            margin-top: 20px;
+        }
+
+        /* Adaptación a móviles */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            h2 {
+                font-size: 23px;
+            }
+
+            p {
+                font-size: 16px;
+            }
+
+            .adorno {
+                font-size: 25px;
+            }
+
+            .contenedor-botones {
+                transform: scale(0.9);
+                transform-origin: center top;
+            }
+
+            .carta-amor {
+                width: 100%;
+                padding: 25px 20px;
+            }
+
+            .mensaje-sobre {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Fondo de corazones -->
+    <div class="fondo-corazones" aria-hidden="true"></div>
+
+    <!-- Cursor de gatitos -->
+    <div class="cursor-personalizado" aria-hidden="true"></div>
+
+    <!-- Encabezado -->
+    <div class="adorno">♡ ───────── ♡</div>
+
+    <h1>Querida Nicole ♡</h1>
+
+    <p>Tengo algo muy importante que preguntarte...</p>
+
+    <h2>¿Quieres ser mi novia?</h2>
+
+    <!-- Botones SÍ y NO -->
+    <div class="contenedor-botones">
+        <button id="boton-si" type="button">SÍ, QUIERO ❤️</button>
+        <button id="boton-no" type="button">Nuh uh.</button>
+    </div>
+
+    <!-- Música -->
+    <div class="controles-musica">
+        <button id="boton-golden" type="button">
+            ♫ Golden Brown
+        </button>
+
+        <button id="boton-from-start" type="button">
+            ♫ From the Start
+        </button>
+
+        <audio id="musica-fondo" loop preload="none">
+            <source src="audio/golden-brown.m4a" type="audio/mp4">
+        </audio>
+
+        <audio id="musica-from-start" loop preload="none">
+            <source src="audio/from-the-start.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- Corazones decorativos -->
+    <div class="corazones-decorativos">♥ ♥ ♥</div>
+
+    <!-- Sobre secreto: aparecerá después de pulsar SÍ -->
+    <div class="sobre-seccion">
+        <p class="texto-sobre">Tengo algo más para ti... ♡</p>
+
+        <button id="boton-sobre"
+            class="boton-sobre"
+            type="button"
+            aria-expanded="false"
+            aria-controls="mensaje-sobre"
+            aria-label="Abrir la carta secreta">
+
+            <span class="sobre-solapa"></span>
+            <span class="sobre-corazon">♥</span>
+        </button>
+
+        <div id="mensaje-sobre" class="mensaje-sobre">
+            <h2>Un pequeño secreto para ti ♡</h2>
+
+            <p>
+                Si has llegado hasta aquí, quiero que sepas
+                que hay muchas cosas que me gustaría decirte,
+                aunque a veces no encuentre las palabras adecuadas.
+            </p>
+
+            <p>
+                Me hace ilusión pensar en todos los momentos
+                que todavía nos quedan por vivir, las risas,
+                las tonterías y los recuerdos que iremos creando.
+            </p>
+
+            <p>
+                No sé qué nos deparará el futuro, pero me alegra
+                poder compartir este presente contigo.
+                Gracias por formar parte de mi vida, my dear puppy. ❤️
+            </p>
+
+            <p class="firma-sobre">
+                Con amor, Azzy ♡
+            </p>
+        </div>
+    </div>
+
+    <!-- Carta principal de amor -->
+    <div id="carta-amor" class="carta-amor">
+        <h2>Para mi Nicole ♡</h2>
+
+        <p>
+            Mi bella flor, no sabes lo feliz que me hace poder
+            llamarte mi novia al fin.
+            Ya que la primera vez no funcionó muy bien,
+            me gustaría volver a intentarlo contigo,
+            pues me diste otra oportunidad aunque no la merecía.
+            Te elegiría en esta y en miles de vidas más si pudiera.
+        </p>
+
+        <p>
+            Eres una persona muy especial
+            para mí y ocupas un gran espacio en mi corazón.
+            Quiero compartir contigo momentos bonitos, reírme
+            contigo por las tonterías más absurdas y crear
+            recuerdos que podamos atesorar con muchísimo cariño.
+        </p>
+
+        <p>
+            No necesito que todo sea perfecto. Solo quiero
+            seguir conociéndote, cuidando lo nuestro y
+            demostrártelo poco a poco.
+        </p>
+
+        <p>
+            Gracias por ser tú y por darme la oportunidad
+            de compartir algo tan bonito contigo. ❤️
+        </p>
+
+        <p class="firma">
+            Con todo el cariño posible, de Azzy para Nicole. ♡
+        </p>
+    </div>
+
+    <script>
+        // Elementos principales
+        const cursor = document.querySelector(".cursor-personalizado");
+        const botonSi = document.querySelector("#boton-si");
+        const botonNo = document.querySelector("#boton-no");
+
+        // Cursor personalizado de gatitos
+        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+            document.addEventListener("mousemove", (event) => {
+                cursor.style.left = event.clientX + "px";
+                cursor.style.top = event.clientY + "px";
+
+                const encimaDeBoton = event.target.closest("button");
+
+                if (encimaDeBoton) {
+                    cursor.classList.add("clicando");
+                } else {
+                    cursor.classList.remove("clicando");
+                }
+            });
+        }
+
+        // Botón SÍ: muestra la carta, el sobre y la lluvia de corazones
+        botonSi.addEventListener("click", () => {
+            const carta = document.querySelector("#carta-amor");
+            const sobre = document.querySelector(".sobre-seccion");
+
+            // Mostrar la carta principal
+            carta.classList.add("visible");
+
+            // Mostrar el sobre secreto
+            sobre.style.display = "flex";
+
+            // Desplazarse hasta la carta
+            setTimeout(() => {
+                carta.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            }, 100);
+
+            // Lluvia de corazones
+            const imagenesCorazones = [
+                "images/heart 1.png",
+                "images/heart 2.png",
+                "images/heart 3.png"
+            ];
+
+            for (let i = 0; i < 180; i++) {
+                const corazon = document.createElement("img");
+
+                corazon.classList.add("corazon-lluvia");
+                corazon.src = imagenesCorazones[
+                    Math.floor(Math.random() * imagenesCorazones.length)
+                ];
+
+                corazon.style.left = Math.random() * 100 + "vw";
+                corazon.style.width = (20 + Math.random() * 35) + "px";
+                corazon.style.height = "auto";
+                corazon.style.animationDuration = (3 + Math.random() * 5) + "s";
+                corazon.style.animationDelay = Math.random() * 4 + "s";
+
+                document.body.appendChild(corazon);
+
+                corazon.addEventListener("animationend", () => {
+                    corazon.remove();
+                });
+            }
+        });
+
+        // El botón NO escapa al acercarse el ratón
+        botonNo.addEventListener("mouseenter", () => {
+            const margen = 20;
+
+            const maxX = Math.max(
+                margen,
+                window.innerWidth - botonNo.offsetWidth - margen
+            );
+
+            const maxY = Math.max(
+                margen,
+                window.innerHeight - botonNo.offsetHeight - margen
+            );
+
+            const x = margen + Math.random() * (maxX - margen);
+            const y = margen + Math.random() * (maxY - margen);
+
+            botonNo.style.position = "fixed";
+            botonNo.style.left = x + "px";
+            botonNo.style.top = y + "px";
+        });
+
+        // Elementos de música
+        const botonGolden = document.querySelector("#boton-golden");
+        const botonFromStart = document.querySelector("#boton-from-start");
+
+        const goldenBrown = document.querySelector("#musica-fondo");
+        const fromStart = document.querySelector("#musica-from-start");
+
+        // Reproducir, pausar o cambiar de canción
+        async function cambiarMusica(cancion, boton, otraCancion, otroBoton) {
+            if (!cancion.paused) {
+                cancion.pause();
+                boton.classList.remove("reproduciendo");
+                return;
+            }
+
+            otraCancion.pause();
+            otroBoton.classList.remove("reproduciendo");
+
+            try {
+                await cancion.play();
+                boton.classList.add("reproduciendo");
+            } catch (error) {
+                alert(
+                    "No se ha podido reproducir la canción. " +
+                    "Comprueba que el archivo esté en la carpeta audio. ❤️"
+                );
+            }
+        }
+
+        botonGolden.addEventListener("click", () => {
+            cambiarMusica(
+                goldenBrown,
+                botonGolden,
+                fromStart,
+                botonFromStart
+            );
+        });
+
+        botonFromStart.addEventListener("click", () => {
+            cambiarMusica(
+                fromStart,
+                botonFromStart,
+                goldenBrown,
+                botonGolden
+            );
+        });
+
+        // Actualizar los botones al pausar o terminar una canción
+        goldenBrown.addEventListener("pause", () => {
+            botonGolden.classList.remove("reproduciendo");
+        });
+
+        fromStart.addEventListener("pause", () => {
+            botonFromStart.classList.remove("reproduciendo");
+        });
+
+        goldenBrown.addEventListener("ended", () => {
+            botonGolden.classList.remove("reproduciendo");
+        });
+
+        fromStart.addEventListener("ended", () => {
+            botonFromStart.classList.remove("reproduciendo");
+        });
+
+        // Crear corazones flotantes de fondo
+        const fondoCorazones = document.querySelector(".fondo-corazones");
+
+        for (let i = 0; i < 24; i++) {
+            const corazon = document.createElement("span");
+
+            corazon.classList.add("corazon-flotante");
+            corazon.textContent = "♥";
+
+            corazon.style.left = Math.random() * 100 + "%";
+            corazon.style.fontSize = (12 + Math.random() * 20) + "px";
+            corazon.style.animationDuration = (12 + Math.random() * 18) + "s";
+            corazon.style.animationDelay = (Math.random() * -25) + "s";
+
+            fondoCorazones.appendChild(corazon);
+        }
+
+        // Abrir y cerrar el sobre secreto
+        const botonSobre = document.querySelector("#boton-sobre");
+        const mensajeSobre = document.querySelector("#mensaje-sobre");
+
+        botonSobre.addEventListener("click", () => {
+            const abierto = botonSobre.classList.toggle("abierto");
+
+            botonSobre.setAttribute("aria-expanded", abierto);
+            mensajeSobre.classList.toggle("visible", abierto);
+
+            if (abierto) {
+                setTimeout(() => {
+                    mensajeSobre.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+                }, 300);
+            }
+        });
+    </script>
+</body>
+</html>
