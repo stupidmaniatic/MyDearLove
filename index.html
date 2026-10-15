@@ -411,6 +411,48 @@
             margin-top: 20px;
         }
 
+        /* Rosas laterales: repetidas y sin deformar */
+        .rosas-laterales {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: 220px;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+
+            background-image: url("./rosas.png");
+            background-repeat: repeat-y;
+            background-position: center top;
+            background-size: auto 650px;
+        }
+
+        .rosas-izquierda {
+            left: 0;
+        }
+
+        .rosas-derecha {
+            right: 0;
+            transform: scaleX(-1);
+        }
+
+        .rosas-laterales img {
+            display: none;
+        }
+
+        /* Mantener el contenido delante de las rosas */
+        body > :not(.rosas-laterales):not(.fondo-corazones):not(.cursor-personalizado) {
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 600px) {
+            .rosas-laterales {
+                width: 100px;
+                background-size: auto 400px;
+            }
+        }
+
         @media (max-width: 480px) {
             h1 {
                 font-size: 32px;
@@ -441,67 +483,13 @@
                 padding: 20px;
             }
         }
-
-        
-/* Ramas de rosas en los laterales */
-
-/* Rosas decorativas en ambos laterales */
-.rosas-laterales {
-    position: fixed;
-    top: 0;
-    width: 150px;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 10;
-}
-
-.rosas-izquierda {
-    left: 0;
-}
-
-.rosas-derecha {
-    right: 0;
-    transform: scaleX(-1);
-}
-
-.rosas-laterales img {
-    display: block;
-    width: auto;
-    height: 100vh;
-    max-width: none;
-    object-fit: contain;
-    object-position: top;
-}
-
-
-@media (max-width: 600px) {
-    .rosas-laterales {
-        width: 42px;
-    }
-}
-
-
-/* En móviles, las ramas serán más estrechas */
-@media (max-width: 600px) {
-    .rosas-laterales {
-        width: 38px;
-    }
-}
-
     </style>
 </head>
 
 <body>
 
-    
-<div class="rosas-laterales rosas-izquierda">
-    <img src="./rosas.png" alt="">
-</div>
-
-<div class="rosas-laterales rosas-derecha">
-    <img src="./rosas.png" alt="">
-</div>
-
+    <div class="rosas-laterales rosas-izquierda" aria-hidden="true"></div>
+    <div class="rosas-laterales rosas-derecha" aria-hidden="true"></div>
 
     <div class="fondo-corazones" aria-hidden="true"></div>
     <div class="cursor-personalizado" aria-hidden="true"></div>
