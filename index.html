@@ -25,6 +25,8 @@
             align-items: center;
             text-align: center;
             overflow-x: hidden;
+            position: relative;
+            isolation: isolate;
         }
 
         h1 {
@@ -111,6 +113,45 @@
             margin-top: 20px;
         }
 
+        /* Rosas laterales: ocupan toda la pantalla sin deformarse */
+        .rosas-laterales {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            width: auto;
+            pointer-events: none;
+            z-index: -1;
+            overflow: visible;
+        }
+
+        .rosas-izquierda {
+            left: 0;
+        }
+
+        .rosas-derecha {
+            right: 0;
+            transform: scaleX(-1);
+        }
+
+        .rosas-laterales img {
+            display: block;
+            height: 120vh;
+            width: auto;
+            max-width: none;
+            position: relative;
+            top: -10vh;
+            object-fit: contain;
+            object-position: top left;
+        }
+
+        /* Ajustes de rosas para pantallas pequeñas */
+        @media (max-width: 600px) {
+            .rosas-laterales img {
+                height: 110vh;
+                top: -5vh;
+            }
+        }
+
         /* Cursor personalizado de gatito */
         .cursor-personalizado {
             position: fixed;
@@ -189,12 +230,13 @@
             }
         }
 
+        /* Corazones flotantes del fondo */
         .fondo-corazones {
             position: fixed;
             inset: 0;
             overflow: hidden;
             pointer-events: none;
-            z-index: 0;
+            z-index: -1;
         }
 
         .corazon-flotante {
@@ -411,48 +453,6 @@
             margin-top: 20px;
         }
 
-        /* Rosas laterales: repetidas y sin deformar */
-        .rosas-laterales {
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            width: 220px;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-
-            background-image: url("./rosas.png");
-            background-repeat: repeat-y;
-            background-position: center top;
-            background-size: auto 650px;
-        }
-
-        .rosas-izquierda {
-            left: 0;
-        }
-
-        .rosas-derecha {
-            right: 0;
-            transform: scaleX(-1);
-        }
-
-        .rosas-laterales img {
-            display: none;
-        }
-
-        /* Mantener el contenido delante de las rosas */
-        body > :not(.rosas-laterales):not(.fondo-corazones):not(.cursor-personalizado) {
-            position: relative;
-            z-index: 1;
-        }
-
-        @media (max-width: 600px) {
-            .rosas-laterales {
-                width: 100px;
-                background-size: auto 400px;
-            }
-        }
-
         @media (max-width: 480px) {
             h1 {
                 font-size: 32px;
@@ -488,8 +488,14 @@
 
 <body>
 
-    <div class="rosas-laterales rosas-izquierda" aria-hidden="true"></div>
-    <div class="rosas-laterales rosas-derecha" aria-hidden="true"></div>
+    <!-- Rosas decorativas -->
+    <div class="rosas-laterales rosas-izquierda" aria-hidden="true">
+        <img src="./rosas.png" alt="">
+    </div>
+
+    <div class="rosas-laterales rosas-derecha" aria-hidden="true">
+        <img src="./rosas.png" alt="">
+    </div>
 
     <div class="fondo-corazones" aria-hidden="true"></div>
     <div class="cursor-personalizado" aria-hidden="true"></div>
@@ -597,7 +603,7 @@
         const botonSi = document.querySelector("#boton-si");
         const botonNo = document.querySelector("#boton-no");
 
-        // Cursor personalizado y gatito de respaldo.
+        // Cursor personalizado de gatito.
         const imagenGatos = new Image();
 
         imagenGatos.onload = () => {
@@ -648,7 +654,7 @@
             });
         }
 
-        // Botón NO: escapar con un desplazamiento suave.
+        // Botón NO: escapa del ratón.
         botonNo.addEventListener("mouseenter", () => {
             const margen = 20;
             const ancho = botonNo.offsetWidth;
@@ -686,7 +692,7 @@
             });
         });
 
-        // Botón SÍ: mostrar carta, sobre y corazones.
+        // Botón SÍ: carta, sobre y lluvia de corazones.
         botonSi.addEventListener("click", () => {
             const carta = document.querySelector("#carta-amor");
             const sobre = document.querySelector(".sobre-seccion");
@@ -750,7 +756,7 @@
             }
         });
 
-        // Música.
+        // Música: reproducir una canción cada vez.
         const botonGolden = document.querySelector("#boton-golden");
         const botonFromStart =
             document.querySelector("#boton-from-start");
