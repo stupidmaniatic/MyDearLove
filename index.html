@@ -89,7 +89,7 @@
             background: #292026;
             color: #F5EEF2;
             border: 1px solid #F04460;
-            transition: background .2s;
+            transition: left .35s ease, top .35s ease, background .2s, transform .2s ease;
         }
 
         #boton-no:hover { background: #3A252D; }
@@ -476,7 +476,7 @@
     <script>
         const cursor = document.querySelector(".cursor-personalizado");
         const botonSi = document.querySelector("#boton-si");
-        const  = document.querySelector("#boton-no");
+        const botonNo = document.querySelector("#boton-no");
 
         // Cargar el cursor y mostrar un gatito de respaldo si falla el PNG.
         const imagenGatos = new Image();
