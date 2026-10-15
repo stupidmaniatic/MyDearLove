@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -89,7 +90,11 @@
             background: #292026;
             color: #F5EEF2;
             border: 1px solid #F04460;
-            transition: background .2s;
+            transition:
+                left .7s cubic-bezier(.22, 1, .36, 1),
+                top .7s cubic-bezier(.22, 1, .36, 1),
+                background .2s;
+            will-change: left, top;
         }
 
         #boton-no:hover { background: #3A252D; }
@@ -123,7 +128,6 @@
             background-position: right center;
         }
 
-        /* Gatito de respaldo si el PNG no carga */
         .cursor-personalizado.sin-imagen {
             background-image: none;
             display: flex;
@@ -321,7 +325,9 @@
             z-index: 2;
         }
 
-        .boton-sobre.abierto .sobre-solapa { transform: rotateX(180deg); }
+        .boton-sobre.abierto .sobre-solapa {
+            transform: rotateX(180deg);
+        }
 
         .sobre-corazon {
             position: absolute;
@@ -372,10 +378,12 @@
             h2 { font-size: 23px; }
             p { font-size: 16px; }
             .adorno { font-size: 25px; }
+
             .contenedor-botones {
                 transform: scale(.9);
                 transform-origin: center top;
             }
+
             .carta-amor { padding: 25px 20px; }
             .mensaje-sobre { padding: 20px; }
         }
@@ -474,33 +482,104 @@
     </div>
 
     <script>
+        "use strict";
+
         const cursor = document.querySelector(".cursor-personalizado");
         const botonSi = document.querySelector("#boton-si");
-        const  = document.querySelector("#boton-no");
+        const botonNo = document.querySelector("#boton-no");
 
-        // Cargar el cursor y mostrar un gatito de respaldo si falla el PNG.
+        // Cursor personalizado y gatito de respaldo.
         const imagenGatos = new Image();
-        imagenGatos.onload = () => cursor.classList.remove("sin-imagen");
+
+        imagenGatos.onload = () => {
+            cursor.classList.remove("sin-imagen");
+        };
+
         imagenGatos.onerror = () => {
             cursor.classList.add("sin-imagen");
             cursor.textContent = "🐱";
         };
+
         imagenGatos.src = "./both%20cats.png";
 
-        if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
-            document.addEventListener("mousemove", event => {
+        const ordenadorConRaton = window.matchMedia(
+            "(hover: hover) and (pointer: fine)"
+        ).matches;
+
+        if (ordenadorConRaton) {
+            document.addEventListener("mousemove", (event) => {
                 cursor.style.left = event.clientX + "px";
                 cursor.style.top = event.clientY + "px";
 
                 const objetivo = event.target;
                 const encimaDeBoton =
-                    objetivo instanceof Element && objetivo.closest("button");
+                    objetivo instanceof Element &&
+                    objetivo.closest("button");
 
-                cursor.classList.toggle("clicando", Boolean(encimaDeBoton));
+                cursor.classList.toggle(
+                    "clicando",
+                    Boolean(encimaDeBoton)
+                );
+            });
+
+            document.addEventListener("mousedown", () => {
+                cursor.classList.add("clicando");
+            });
+
+            document.addEventListener("mouseup", (event) => {
+                const objetivo = event.target;
+                const encimaDeBoton =
+                    objetivo instanceof Element &&
+                    objetivo.closest("button");
+
+                cursor.classList.toggle(
+                    "clicando",
+                    Boolean(encimaDeBoton)
+                );
             });
         }
 
-        // Botón SÍ: mostrar carta, sobre y lluvia de corazones.
+        // Botón NO: escapar con un desplazamiento suave.
+        botonNo.addEventListener("mouseenter", () => {
+            const margen = 20;
+            const ancho = botonNo.offsetWidth;
+            const alto = botonNo.offsetHeight;
+
+            const maxX = Math.max(
+                margen,
+                window.innerWidth - ancho - margen
+            );
+
+            const maxY = Math.max(
+                margen,
+                window.innerHeight - alto - margen
+            );
+
+            const rect = botonNo.getBoundingClientRect();
+
+            // Conservar la posición actual al pasar a posición fija.
+            if (getComputedStyle(botonNo).position !== "fixed") {
+                botonNo.style.left = rect.left + "px";
+                botonNo.style.top = rect.top + "px";
+                botonNo.style.position = "fixed";
+            }
+
+            // Dejar que el navegador registre la posición inicial.
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    const nuevoX = margen +
+                        Math.random() * Math.max(0, maxX - margen);
+
+                    const nuevoY = margen +
+                        Math.random() * Math.max(0, maxY - margen);
+
+                    botonNo.style.left = nuevoX + "px";
+                    botonNo.style.top = nuevoY + "px";
+                });
+            });
+        });
+
+        // Botón SÍ: mostrar la carta, el sobre y la lluvia de corazones.
         botonSi.addEventListener("click", () => {
             const carta = document.querySelector("#carta-amor");
             const sobre = document.querySelector(".sobre-seccion");
@@ -509,7 +588,10 @@
             sobre.style.display = "flex";
 
             setTimeout(() => {
-                carta.scrollIntoView({ behavior: "smooth", block: "center" });
+                carta.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
             }, 100);
 
             const imagenesCorazones = [
@@ -521,6 +603,7 @@
             for (let i = 0; i < 180; i++) {
                 const corazon = document.createElement("img");
                 corazon.className = "corazon-lluvia";
+
                 corazon.src = imagenesCorazones[
                     Math.floor(Math.random() * imagenesCorazones.length)
                 ];
@@ -528,46 +611,46 @@
                 corazon.style.left = Math.random() * 100 + "vw";
                 corazon.style.width = (20 + Math.random() * 35) + "px";
                 corazon.style.height = "auto";
-                corazon.style.animationDuration = (3 + Math.random() * 5) + "s";
-                corazon.style.animationDelay = Math.random() * 4 + "s";
+                corazon.style.animationDuration =
+                    (3 + Math.random() * 5) + "s";
+                corazon.style.animationDelay =
+                    Math.random() * 4 + "s";
 
-                // Si la imagen falla, se sustituye por un corazón de texto.
                 corazon.onerror = () => {
                     const respaldo = document.createElement("span");
                     respaldo.className = "corazon-respaldo";
                     respaldo.textContent = "♥";
                     respaldo.style.left = corazon.style.left;
                     respaldo.style.fontSize = corazon.style.width;
-                    respaldo.style.animationDuration = corazon.style.animationDuration;
-                    respaldo.style.animationDelay = corazon.style.animationDelay;
+                    respaldo.style.animationDuration =
+                        corazon.style.animationDuration;
+                    respaldo.style.animationDelay =
+                        corazon.style.animationDelay;
+
                     corazon.replaceWith(respaldo);
-                    respaldo.addEventListener("animationend", () => respaldo.remove());
+
+                    respaldo.addEventListener("animationend", () => {
+                        respaldo.remove();
+                    });
                 };
 
                 document.body.appendChild(corazon);
-                corazon.addEventListener("animationend", () => corazon.remove());
+
+                corazon.addEventListener("animationend", () => {
+                    corazon.remove();
+                });
             }
         });
 
-        // El botón NO escapa del ratón.
-        botonNo.addEventListener("mouseenter", () => {
-            
-            const margen = 20;
-            const maxX = Math.max(margen, window.innerWidth - botonNo.offsetWidth - margen);
-            const maxY = Math.max(margen, window.innerHeight - botonNo.offsetHeight - margen);
-            botonNo.style.position = "fixed";
-            botonNo.style.left = (margen + Math.random() * (maxX - margen)) + "px";
-            botonNo.style.top = (margen + Math.random() * (maxY - margen)) + "px";
-            transition: left 0.35s ease, top 0.35s ease, transform 0.2s ease;
-        });
-
-        // Música
+        // Música.
         const botonGolden = document.querySelector("#boton-golden");
         const botonFromStart = document.querySelector("#boton-from-start");
         const goldenBrown = document.querySelector("#musica-fondo");
         const fromStart = document.querySelector("#musica-from-start");
 
-        async function cambiarMusica(cancion, boton, otraCancion, otroBoton) {
+        async function cambiarMusica(
+            cancion, boton, otraCancion, otroBoton
+        ) {
             if (!cancion.paused) {
                 cancion.pause();
                 boton.classList.remove("reproduciendo");
@@ -581,36 +664,57 @@
                 await cancion.play();
                 boton.classList.add("reproduciendo");
             } catch (error) {
-                alert("No se ha podido reproducir la canción. Comprueba que el archivo esté junto a index.html. ❤️");
+                console.error("Error al reproducir la música:", error);
+
+                alert(
+                    "No se ha podido reproducir la canción. " +
+                    "Comprueba que el archivo esté junto a index.html. ❤️"
+                );
             }
         }
 
-        botonGolden.addEventListener("click", () =>
-            cambiarMusica(goldenBrown, botonGolden, fromStart, botonFromStart)
-        );
+        botonGolden.addEventListener("click", () => {
+            cambiarMusica(
+                goldenBrown,
+                botonGolden,
+                fromStart,
+                botonFromStart
+            );
+        });
 
-        botonFromStart.addEventListener("click", () =>
-            cambiarMusica(fromStart, botonFromStart, goldenBrown, botonGolden)
-        );
+        botonFromStart.addEventListener("click", () => {
+            cambiarMusica(
+                fromStart,
+                botonFromStart,
+                goldenBrown,
+                botonGolden
+            );
+        });
 
-        goldenBrown.addEventListener("pause", () =>
-            botonGolden.classList.remove("reproduciendo")
-        );
-        fromStart.addEventListener("pause", () =>
-            botonFromStart.classList.remove("reproduciendo")
-        );
+        goldenBrown.addEventListener("pause", () => {
+            botonGolden.classList.remove("reproduciendo");
+        });
 
-        // Corazones flotantes de fondo.
+        fromStart.addEventListener("pause", () => {
+            botonFromStart.classList.remove("reproduciendo");
+        });
+
+        // Corazones flotantes del fondo.
         const fondoCorazones = document.querySelector(".fondo-corazones");
 
         for (let i = 0; i < 24; i++) {
             const corazon = document.createElement("span");
+
             corazon.className = "corazon-flotante";
             corazon.textContent = "♥";
             corazon.style.left = Math.random() * 100 + "%";
-            corazon.style.fontSize = (12 + Math.random() * 20) + "px";
-            corazon.style.animationDuration = (12 + Math.random() * 18) + "s";
-            corazon.style.animationDelay = (Math.random() * -25) + "s";
+            corazon.style.fontSize =
+                (12 + Math.random() * 20) + "px";
+            corazon.style.animationDuration =
+                (12 + Math.random() * 18) + "s";
+            corazon.style.animationDelay =
+                (Math.random() * -25) + "s";
+
             fondoCorazones.appendChild(corazon);
         }
 
@@ -620,7 +724,8 @@
 
         botonSobre.addEventListener("click", () => {
             const abierto = botonSobre.classList.toggle("abierto");
-            botonSobre.setAttribute("aria-expanded", abierto);
+
+            botonSobre.setAttribute("aria-expanded", String(abierto));
             mensajeSobre.classList.toggle("visible", abierto);
 
             if (abierto) {
